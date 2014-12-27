@@ -51,18 +51,6 @@ def find_token(haystack, needle):
         return None
     return haystack[count-1:-1]
 
-def find_tokens(line, token):
-    # Get the open parentheses from this line
-    pos=0
-    token_indeces=[]
-    while 1 == 1:
-        pos=line.find(token, pos)
-        if pos == -1:
-            break
-        token_indeces.append(pos)
-        pos = pos + 1
-    return token_indeces
-
 def match_parenthesis(ll, count, pos):
     '''Scan lines until a matching set of open/close parenthesis
        is found.  It retunns a tuple of the starting line and index
@@ -94,12 +82,12 @@ def match_parenthesis(ll, count, pos):
                 pos=popos+1
             else:
                 startcnt, startpos = paren_list.pop()
-                endcnt, endpos = count, pos
+                endcnt, endpos = count, pcpos
                 pos=pcpos+1
         elif pcpos < popos:
             if pcpos > 0:
                 startcnt, startpos = paren_list.pop()
-                endcnt, endpos = count, pos
+                endcnt, endpos = count, pcpos
                 pos=pcpos+1
             else:
                 paren_list.append((count,popos))
@@ -110,6 +98,7 @@ def match_parenthesis(ll, count, pos):
 
       
 (PropertyInfo(458754ul,"state",PropertyInfo::ENUM8,PropertyInfo::SCALAR,EnumInfo("PlatformAdminStateT",list_of(ConstInfo("off",0))(ConstInfo("on",1)))))
+                            (PropertyInfo(2147516423ul, "RelatorUniverse", PropertyInfo::COMPOSITE, 7, PropertyInfo::VECTOR))
 
 def get_properties(subset, prop_array):
     '''Get the properties associated with this class. Properties
@@ -123,20 +112,25 @@ def get_properties(subset, prop_array):
         # matching the closing brace
         index=count
         pos=0
+        fullstring=''
         startcnt, startpos, count, endpos = match_parenthesis(subset, index, pos)
         while index <= count:
             # The split is used to remove any single line comments
             # that  may appear at the end of the line, as those have
             # parenthesis too
-            fullstring = fullstring + lines[count].split('//')[0]
+            fullstring = fullstring + subset[count].split('//')[0]
             index = index + 1
-
         # Properties are grouped by parenthesis, and their members
         # are also grouped by parenthesis. Use the inner parenthesis
         # as the mechanism for getting the string of members
         #propstring=re.match(PROPERTIES_RE, fullstring.strip())
-        startcnt, startpos, count, endpos = match_parenthesis(subset, index, pos)
-        prop_array.append(propstring.group(1))
+        pos = startpos + 1
+        tmparray=[]
+        tmparray.append(fullstring)
+        a, startpos, b, endpos = match_parenthesis(tmparray, 0, pos)
+        startpos = startpos + 1
+        #endpos = endpos - 1
+        prop_array.append(fullstring[startpos:endpos])
         count = count + 1
     return subset[count:-1]
 
@@ -160,13 +154,13 @@ while 1 == 1:
 
     # Start with a clean prop array
     prop_array=[]
-    classlist=[class.strip() for prop in propstring.split(',')]
+    classlist=[prop.strip() for prop in class_string.split(',')]
 
     # Get the class properties
 
     # we know the next line is always a "list_of", so
     # skip it and get all the properties
-    lines=get_properties(lines[1:-1], prop_array)
+    lines=get_properties(lines[2:-1], prop_array)
 
     # See if there are any keys associated with this class.
     # If there are, set the "is_key" field in the associated
