@@ -97,8 +97,6 @@ def match_parenthesis(ll, count, pos):
             return (startcnt, startpos, endcnt, endpos)
 
       
-(PropertyInfo(458754ul,"state",PropertyInfo::ENUM8,PropertyInfo::SCALAR,EnumInfo("PlatformAdminStateT",list_of(ConstInfo("off",0))(ConstInfo("on",1)))))
-                            (PropertyInfo(2147516423ul, "RelatorUniverse", PropertyInfo::COMPOSITE, 7, PropertyInfo::VECTOR))
 
 def get_properties(subset, prop_array):
     '''Get the properties associated with this class. Properties
@@ -118,7 +116,7 @@ def get_properties(subset, prop_array):
             # The split is used to remove any single line comments
             # that  may appear at the end of the line, as those have
             # parenthesis too
-            fullstring = fullstring + subset[count].split('//')[0]
+            fullstring = fullstring + subset[index].split('//')[0]
             index = index + 1
         # Properties are grouped by parenthesis, and their members
         # are also grouped by parenthesis. Use the inner parenthesis
