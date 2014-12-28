@@ -209,42 +209,42 @@ def dump_classes(class_list):
 
 def add_java_property(propinfo):
     if len(propinfo.token_array) > 0:
-        print "                eib = new EnumInfoBuilder();"
-	print "                eib.setName(" + propinfo.enum_name + ");"
+        print "        eib = new EnumInfoBuilder();"
+	print "        eib.setName(" + propinfo.enum_name + ");"
 	for enum_val in propinfo.token_array:
             name,val = enum_val.split(',')
-            print "                eib.setEnumValue(" + name + ",new Integer(" + val + "));"
-        print "                ei = eib.build();"
-    print "                ppib = new PolicyPropertyInfoBuilder();"
-    print "                ppil = new ArrayList<PolicyPropertyInfo>();"
-    print "                classKeys = new ArrayList<PolicyPropertyId>();"
-    print "                ppib.setPropId(new PolicyPropertyId(" + propinfo.pid + "l))."
-    print "                     setPropName(" + propinfo.name + ")."
-    print "                     setType(PolicyPropertyInfo.PropertyType." + propinfo.type.split(CSEP)[1] + ")."
+            print "        eib.setEnumValue(" + name + ",new Integer(" + val + "));"
+        print "        ei = eib.build();"
+    print "        ppib = new PolicyPropertyInfoBuilder();"
+    print "        ppib.setPropId(new PolicyPropertyId(" + propinfo.pid + "l))."
+    print "             setPropName(" + propinfo.name + ")."
+    print "             setType(PolicyPropertyInfo.PropertyType." + propinfo.type.split(CSEP)[1] + ")."
     if len(propinfo.token_array) > 0:
-        print "                     setEnumInfo(ei)."
+        print "             setEnumInfo(ei)."
 
     if propinfo.type == COMPOSITE_PROP: 
-        print "                     setClassId(" + propinfo.cid + "l)."
-    print "                     setPropCardinality(PolicyPropertyInfo.PropertyCardinality." + propinfo.cardinality.split(CSEP)[1] + ");"
-    print "                ppi = ppib.build();"
-    print "                ppil.add(ppi);"
+        print "             setClassId(" + propinfo.cid + "l)."
+    print "             setPropCardinality(PolicyPropertyInfo.PropertyCardinality." + propinfo.cardinality.split(CSEP)[1] + ");"
+    print "        ppi = ppib.build();"
+    print "        ppil.add(ppi);"
     if propinfo.is_key:
-        print "                classKeys.add(ppi.getPropId());"
+        print "        classKeys.add(ppi.getPropId());"
 
 def add_java_class(java_class):
-    print "                pcib = new PolicyClassInfoBuilder();"
-    print "                pcib.setClassId(" + java_class.cid + ")."
-    print "                     setClassName(" + java_class.name + ")."
-    print "                     setPolicyType(PolicyClassInfo.PolicyClassType." + java_class.ctype.split(CSEP)[1] + ")."
-    print "                     setProperty(ppil)."
-    print "                     setKey(classKeys);"
-    print "                pci = pcib.build();"
-    print "                metaData.put(pci.getClassName(), pci);"
+    print "        pcib = new PolicyClassInfoBuilder();"
+    print "        pcib.setClassId(" + java_class.cid + ")."
+    print "             setClassName(" + java_class.name + ")."
+    print "             setPolicyType(PolicyClassInfo.PolicyClassType." + java_class.ctype.split(CSEP)[1] + ")."
+    print "             setProperty(ppil)."
+    print "             setKey(classKeys);"
+    print "        pci = pcib.build();"
+    print "        metaData.put(pci.getClassName(), pci);"
     print ""
 
 def create_java_data(class_list):
     for c in class_list:
+        print "        ppil = new ArrayList<PolicyPropertyInfo>();"
+        print "        classKeys = new ArrayList<PolicyPropertyId>();"
         for prop_obj in c.properties:
             add_java_property(prop_obj)
         add_java_class(c)
