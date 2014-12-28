@@ -208,12 +208,22 @@ def dump_classes(class_list):
         print "----------------------------------"
 
 def add_java_property(propinfo):
+    if len(propinfo.token_array) > 0:
+        print "                eib = new EnumInfoBuilder();"
+	print "                eib.setName(" + propinfo.enum_name + ");"
+	for enum_val in propinfo.token_array:
+            name,val = enum_val.split(',')
+            print "                eib.setEnumValue(" + name + ",new Integer(" + val + "));"
+        print "                ei = eib.build();"
     print "                ppib = new PolicyPropertyInfoBuilder();"
     print "                ppil = new ArrayList<PolicyPropertyInfo>();"
     print "                classKeys = new ArrayList<PolicyPropertyId>();"
     print "                ppib.setPropId(new PolicyPropertyId(" + propinfo.pid + "l))."
     print "                     setPropName(" + propinfo.name + ")."
     print "                     setType(PolicyPropertyInfo.PropertyType." + propinfo.type.split(CSEP)[1] + ")."
+    if len(propinfo.token_array) > 0:
+        print "                     setEnumInfo(ei)."
+
     if propinfo.type == COMPOSITE_PROP: 
         print "                     setClassId(" + propinfo.cid + "l)."
     print "                     setPropCardinality(PolicyPropertyInfo.PropertyCardinality." + propinfo.cardinality.split(CSEP)[1] + ");"
