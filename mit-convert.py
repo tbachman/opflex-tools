@@ -39,7 +39,7 @@ class ClassInfo:
     def __init__(self, class_string, prop_array):
 
         field_list=[field.strip() for field in class_string.split(',')]
-        self.cid, self.ctype, self.name, self.owner = field_list[0:-1]
+        self.cid, self.ctype, self.name, self.owner = field_list[0:]
 
         for prop in prop_array:
             self.properties.append(PropertyInfo(prop))
@@ -58,7 +58,7 @@ def find_token(haystack, needle):
             break
     if hay == haystack[-1]:
         return None
-    return haystack[count-1:-1]
+    return haystack[count-1:]
 
 def match_parenthesis(ll, count, pos):
     '''Scan lines until a matching set of open/close parenthesis
@@ -138,7 +138,7 @@ def get_properties(subset, prop_array):
         startpos = startpos + 1
         prop_array.append(fullstring[startpos:endpos].replace(WS, '').replace(NL,''))
         count = count + 1
-    return subset[count:-1]
+    return subset[count:]
 
 f=open_metadata(METADATA_FILE)
 if f == None:
@@ -166,12 +166,12 @@ while 1 == 1:
 
     # we know the next line is always a "list_of", so
     # skip it and get all the properties
-    lines=get_properties(lines[2:-1], prop_array)
+    lines=get_properties(lines[2:], prop_array)
 
     # See if there are any keys associated with this class.
     # If there are, set the "is_key" field in the associated
     # property.
-    if re.match(LIST_OF_RE, lines[1:-1]):
+    if re.match(LIST_OF_RE, lines[1:]):
         
 
     # We have a new class -- create the object
