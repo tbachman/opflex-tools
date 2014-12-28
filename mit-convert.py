@@ -1,10 +1,13 @@
-#!/usr/bin/python
+import re
+
 METADATA_FILE='metadata.cpp'
 CI_OPEN='ClassInfo\('
 LIST_OF="list_of"
 
 OPEN_PAREN="("
 CLOSE_PAREN=")"
+WS=' '
+NL='\n'
 
 # This is the regular expression that can be used to
 # extract a string of items from the PropertyInfo object
@@ -21,19 +24,25 @@ class PropertyInfo:
            out any whitespace, and put them into their
            appropriate fields'''
         proplist=[prop.strip() for prop in propstring.split(',')]
-        if len(proplist) == 5:
+        if len(proplist) == 4:
+            self.pid, self.name, self.type, self.cardinality = proplist
+        elif len(proplist) == 5:
             self.pid, self.name, self.type, self.cid, self.cardinality = proplist
         else:
-            self.pid, self.name, self.type, self.cardinality = proplist
+            # This case handles EnumInfo's. We can't split it because
+            # it splits up the EnumInfo properties. Instead, we have
+            # to parse it, knowing what an EnumInfo format looks like
 
 
 class ClassInfo:
+    self.properties=[]
     def __init__(self, class_string, prop_array):
 
         field_list=[field.strip() for field in class_string.split(',')]
         self.cid, self.ctype, self.name, self.owner = field_list[0:-1]
 
-        self.properties=prop_array
+        for prop in prop_array:
+            self.properties.append(PropertyInfo(prop))
 
 def open_metadata(filename):
     '''Open the metadata file for reading'''
@@ -127,8 +136,7 @@ def get_properties(subset, prop_array):
         tmparray.append(fullstring)
         a, startpos, b, endpos = match_parenthesis(tmparray, 0, pos)
         startpos = startpos + 1
-        #endpos = endpos - 1
-        prop_array.append(fullstring[startpos:endpos])
+        prop_array.append(fullstring[startpos:endpos].replace(WS, '').replace(NL,''))
         count = count + 1
     return subset[count:-1]
 
