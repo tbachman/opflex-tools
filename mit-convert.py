@@ -3,8 +3,6 @@
 # what I need -- convert the metadata.cpp file output by
 # the Genie code generator into a java file that creates
 # the equivalent schema
-#
-#
 import re
 
 METADATA_FILE='metadata.cpp'
@@ -16,6 +14,8 @@ CLOSE_PAREN=")"
 WS=' '
 NL='\n'
 LIST_SEP=','
+CSEP='::'
+COMPOSITE_PROP='PropertyInfo::COMPOSITE'
 
 # This is the regular expression that can be used to
 # extract a string of items from the PropertyInfo object
@@ -207,6 +207,37 @@ def dump_classes(class_list):
                     print "\t\t\tname: " + name + ", val: " + val
         print "----------------------------------"
 
+def add_java_property(propinfo):
+    print "        ppib = new PolicyPropertyInfoBuilder();"
+    print "        ppil = new ArrayList<PolicyPropertyInfo>();"
+    print "        classKeys = new ArrayList<PolicyPropertyId>();"
+    print "        ppib.setPropId(new PolicyPropertyId(" + propinfo.pid + "l))."
+    print "             setPropName(" + propinfo.name + ")."
+    print "             setType(PolicyPropertyInfo.PropertyType." + propinfo.type.split(CSEP)[1] + ")."
+    if propinfo.type == COMPOSITE_PROP: 
+        print "             setClassId(" + propinfo.cid + "l)."
+    print "             setPropCardinality(PolicyPropertyInfo.PropertyCardinality." + propinfo.cardinality.split(CSEP)[1] + ");"
+    print "        ppi = ppib.build();"
+    print "        ppil.add(ppi);"
+    if propinfo.is_key:
+        print "        classKeys.add(ppi.getPropId());"
+
+def add_java_class(java_class):
+    print "        pcib = new PolicyClassInfoBuilder();"
+    print "        pcib.setClassId(" + java_class.cid + ")."
+    print "             setClassName(" + java_class.name + ")."
+    print "             setPolicyType(PolicyClassInfo.PolicyClassType." + java_class.ctype.split(CSEP)[1] + ");"
+    print "             setProperty(ppil)."
+    print "             setKey(classKeys);"
+    print "        pci = pcib.build();"
+    print ""
+
+def create_java_data(class_list):
+    for c in class_list:
+        for prop_obj in c.properties:
+            add_java_property(prop_obj)
+        add_java_class(c)
+            
 f=open_metadata(METADATA_FILE)
 if f == None:
     print "Couldn't open " . METADATA_FILE
@@ -249,3 +280,4 @@ while 1 == 1:
                 if prop_id.group(1) == prop.pid:
                     prop.set_key()
             index += 1
+create_java_data(class_list)
