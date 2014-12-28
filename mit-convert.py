@@ -24,6 +24,7 @@ PROPERTIES_RE='\(PropertyInfo\(([^\)]*).*'
 # This is the regular expression that can be used to
 # extract a string of items from the ClassInfo object
 CLASS_RE='ClassInfo\((.*)'
+PROPID_RE='\(([0-9]*)\)'
 
 class PropertyInfo:
     def extract_tokens(self, enum_token):
@@ -49,6 +50,7 @@ class PropertyInfo:
         self.cid = ''
         self.name = ''
         self.type = ''
+        self.is_key = False
         self.cardinality = ''
         self.enum_name = ''
         self.token_array = []
@@ -75,6 +77,10 @@ class PropertyInfo:
             enum_array.append(enum_token)
             # Now get the enum tokens
             self.extract_tokens(enum_array)
+        # remove the 'ul'
+        self.pid = self.pid[0:-2]
+    def set_key(self):
+        self.is_key = True
 
 
 class ClassInfo:
@@ -187,6 +193,20 @@ def get_properties(subset, prop_array):
         count = count + 1
     return subset[count:]
 
+def dump_classes(class_list):
+    for c in class_list:
+        print "Class Name: " + c.name
+        for prop_obj in c.properties:
+            print "\tPropertyName: " + prop_obj.name
+            if prop_obj.is_key:
+                print "\t\tIs a Key"
+            if prop_obj.enum_name:
+                print "\t\tEnumInfo: " + prop_obj.enum_name
+                for enum_val in prop_obj.token_array:
+                    name,val = enum_val.split(',')
+                    print "\t\t\tname: " + name + ", val: " + val
+        print "----------------------------------"
+
 f=open_metadata(METADATA_FILE)
 if f == None:
     print "Couldn't open " . METADATA_FILE
@@ -214,3 +234,18 @@ while 1 == 1:
     # property.
     c=ClassInfo(class_string, prop_array)
     class_list.append(c)
+    # Now go find any properties used as keys.  We can always
+    # skip the next line, as it's a comma in the ClassInfo 
+    # parameter list. If the line after it has list_of, then
+    # we need to extract lines as long as they have an open
+    # parenthesis
+    if lines[1].find(LIST_OF) != -1:
+        index=2
+        while 1 == 1:
+            prop_id=re.match(PROPID_RE, lines[index].strip())
+            if prop_id == None:
+                break
+            for prop in c.properties:
+                if prop_id.group(1) == prop.pid:
+                    prop.set_key()
+            index += 1
