@@ -208,28 +208,29 @@ def dump_classes(class_list):
         print "----------------------------------"
 
 def add_java_property(propinfo):
-    print "        ppib = new PolicyPropertyInfoBuilder();"
-    print "        ppil = new ArrayList<PolicyPropertyInfo>();"
-    print "        classKeys = new ArrayList<PolicyPropertyId>();"
-    print "        ppib.setPropId(new PolicyPropertyId(" + propinfo.pid + "l))."
-    print "             setPropName(" + propinfo.name + ")."
-    print "             setType(PolicyPropertyInfo.PropertyType." + propinfo.type.split(CSEP)[1] + ")."
+    print "                ppib = new PolicyPropertyInfoBuilder();"
+    print "                ppil = new ArrayList<PolicyPropertyInfo>();"
+    print "                classKeys = new ArrayList<PolicyPropertyId>();"
+    print "                ppib.setPropId(new PolicyPropertyId(" + propinfo.pid + "l))."
+    print "                     setPropName(" + propinfo.name + ")."
+    print "                     setType(PolicyPropertyInfo.PropertyType." + propinfo.type.split(CSEP)[1] + ")."
     if propinfo.type == COMPOSITE_PROP: 
-        print "             setClassId(" + propinfo.cid + "l)."
-    print "             setPropCardinality(PolicyPropertyInfo.PropertyCardinality." + propinfo.cardinality.split(CSEP)[1] + ");"
-    print "        ppi = ppib.build();"
-    print "        ppil.add(ppi);"
+        print "                     setClassId(" + propinfo.cid + "l)."
+    print "                     setPropCardinality(PolicyPropertyInfo.PropertyCardinality." + propinfo.cardinality.split(CSEP)[1] + ");"
+    print "                ppi = ppib.build();"
+    print "                ppil.add(ppi);"
     if propinfo.is_key:
-        print "        classKeys.add(ppi.getPropId());"
+        print "                classKeys.add(ppi.getPropId());"
 
 def add_java_class(java_class):
-    print "        pcib = new PolicyClassInfoBuilder();"
-    print "        pcib.setClassId(" + java_class.cid + ")."
-    print "             setClassName(" + java_class.name + ")."
-    print "             setPolicyType(PolicyClassInfo.PolicyClassType." + java_class.ctype.split(CSEP)[1] + ");"
-    print "             setProperty(ppil)."
-    print "             setKey(classKeys);"
-    print "        pci = pcib.build();"
+    print "                pcib = new PolicyClassInfoBuilder();"
+    print "                pcib.setClassId(" + java_class.cid + ")."
+    print "                     setClassName(" + java_class.name + ")."
+    print "                     setPolicyType(PolicyClassInfo.PolicyClassType." + java_class.ctype.split(CSEP)[1] + ")."
+    print "                     setProperty(ppil)."
+    print "                     setKey(classKeys);"
+    print "                pci = pcib.build();"
+    print "                metaData.put(pci.getClassName(), pci);"
     print ""
 
 def create_java_data(class_list):
