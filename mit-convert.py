@@ -239,6 +239,8 @@ def add_java_class(java_class):
     print "             setKey(classKeys);"
     print "        pci = pcib.build();"
     print "        metaData.put(pci.getClassName(), pci);"
+    print "        classIdToString.put(new Long(pci.getClassId()), pci.getClassName());"
+
     print ""
 
 def create_java_data(class_list):
