@@ -213,7 +213,7 @@ def add_java_property(propinfo):
 	print "        eib.setName(" + propinfo.enum_name + ");"
 	for enum_val in propinfo.token_array:
             name,val = enum_val.split(',')
-            print "        eib.setEnumValue(" + name + ",new Integer(" + val + "));"
+            print "        eib.setEnumValue(" + name + ",new BigInteger(String.valueOf(" + val + ")));"
         print "        ei = eib.build();"
     print "        ppib = new PolicyPropertyInfoBuilder();"
     print "        ppib.setPropId(new PolicyPropertyId(" + propinfo.pid + "l))."
@@ -239,7 +239,7 @@ def add_java_class(java_class):
     print "             setKey(classKeys);"
     print "        pci = pcib.build();"
     print "        metaData.put(pci.getClassName(), pci);"
-    print "        classIdToString.put(new Long(pci.getClassId()), pci.getClassName());"
+    print "        classIdToString.put(Long.valueOf(pci.getClassId()), pci.getClassName());"
 
     print ""
 
